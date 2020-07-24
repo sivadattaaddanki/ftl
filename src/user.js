@@ -86,7 +86,7 @@ export class User extends React.Component {
     render() {
         const { data, selectedUser, modalOpen, calenderdate,dataCheck } = this.state;
         var arrayData=this.selectedDataArray(calenderdate);
-        var errorMessage=arrayData.length>0?'':'No Data,Choose Another Date';
+        var errorMessage=arrayData.length>0?'':'No Data , Choose Another Date';
         const body = (
             <TableBody>
                 {
@@ -176,7 +176,7 @@ export class User extends React.Component {
                         </Table>
                             
                     </TableContainer>
-                            <div className="col-sm-2 offset-sm-5" >
+                            <div className="col-sm-6 offset-sm-3" >
                             <span className="center text-danger">{errorMessage}</span>
                             </div>
                         
