@@ -24,7 +24,9 @@ export class User extends React.Component {
 
     state = {
         selectedUser: '',
+        errorMessage:'',
         modalOpen: false,
+        dataCheck:false,
         calenderdate: moment().format('YYYY-MM-DD'),
         data: {
             "ok": true,
@@ -68,30 +70,36 @@ export class User extends React.Component {
         }
     };
 
-
+    selectedDataArray=(date)=>{
+        let array=[];
+        if(this.state.selectedUser&&this.state.selectedUser.activity_periods){
+            this.state.selectedUser.activity_periods.map((activity)=>{
+                if(moment(activity.start_time, 'MMM D YYYY, h:mm a').format('YYYY-MM-DD') == date){
+                    array.push(activity)
+                }
+            })
+        }
+        // if(array.length==0)this.setState({errorMessage:"No Data"})
+        return array;
+    }
 
     render() {
-        const { data, selectedUser, modalOpen, calenderdate } = this.state;
+        const { data, selectedUser, modalOpen, calenderdate,dataCheck } = this.state;
+        var arrayData=this.selectedDataArray(calenderdate);
+        var errorMessage=arrayData.length>0?'':'No Data,Choose Another Date';
         const body = (
             <TableBody>
-
                 {
-                    selectedUser && selectedUser.activity_periods && selectedUser.activity_periods.length > 0 &&
-                    selectedUser.activity_periods.map((activity) => {
-                        console.log('sa1', moment(activity.start_time, 'MMM D YYYY, h:mm a').format('YYYY-MM-DD'))
-                        console.log('sa2', moment().format('YYYY-MM-DD'))
-                        if (moment(activity.start_time, 'MMM D YYYY, h:mm a').format('YYYY-MM-DD') == this.state.calenderdate) {
+                    arrayData && arrayData.length > 0 &&
+                    arrayData.map((activity) => {
+                            // if(!dataCheck){this.setState({errorMessage:"true"})};
                             return (
                                 <TableRow><TableCell align="center">{moment(activity.start_time, 'MMM D YYYY, h:mm a').format('h:mm a')}</TableCell>
                                     <TableCell align="center">{moment(activity.end_time, 'MMM D YYYY, h:mm a').format('h:mm a')}</TableCell></TableRow>
-
                             )
-                        }
-
-
-
-                    })
+                    })      
                 }
+           
             </TableBody>
         );
         // console.log(data);
@@ -117,7 +125,7 @@ export class User extends React.Component {
                                     style={{ cursor: 'pointer', }}
                                     onClick={() => {
                                         console.log(row);
-                                        this.setState({ selectedUser: row, modalOpen: true })
+                                        this.setState({ calenderdate:moment().format('YYYY-MM-DD'),selectedUser: row, modalOpen: true })
                                     }}>
                                     <TableCell component="th" scope="row">
                                         {row.id}
@@ -147,7 +155,7 @@ export class User extends React.Component {
                                 type="date"
                                 defaultValue={moment().format('YYYY-MM-DD')}
                                 placeholder="Please select date to check activity"
-                                onChange={(event)=>{this.setState({calenderdate:event.target.value})}}
+                                onChange={(event)=>{this.setState({calenderdate:event.target.value })}}
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
@@ -166,7 +174,12 @@ export class User extends React.Component {
 
                             {body}
                         </Table>
+                            
                     </TableContainer>
+                            <div className="col-sm-2 offset-sm-5" >
+                            <span className="center text-danger">{errorMessage}</span>
+                            </div>
+                        
 
                 </Dialog>
 
